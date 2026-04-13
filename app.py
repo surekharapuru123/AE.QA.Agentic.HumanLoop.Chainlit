@@ -1724,8 +1724,11 @@ def _mcp_chainlit_step_tags(mcp_conn: str, base: list[str], real_name: str = "")
 
 
 def _mcp_step_default_open(mcp_conn: str, real_name: str = "") -> bool:
-    """Expand Jira/Qase MCP steps by default so progress (input/output) is visible like a live log."""
-    if not _env_truthy("CHAINLIT_MCP_PROGRESS_STEPS_EXPAND", default=True):
+    """MCP tool steps are collapsed in the Chainlit UI by default (workflow runs stay compact).
+
+    Set ``CHAINLIT_MCP_PROGRESS_STEPS_EXPAND=1`` to expand **Jira/Qase** steps only (live tool log style).
+    """
+    if not _env_truthy("CHAINLIT_MCP_PROGRESS_STEPS_EXPAND", default=False):
         return False
     return _effective_mcp_display_bucket(mcp_conn, real_name) in ("qase", "jira")
 
@@ -1972,7 +1975,7 @@ async def _run_mcp_connectivity_probe(ws: WebsocketSession) -> str:
             name=f"MCP probe · {mcp_conn}",
             type="run",
             tags=["mcp-probe", "setup"],
-            default_open=True,
+            default_open=False,
         ) as step:
             step.input = {"connection": mcp_conn}
             try:
@@ -2778,6 +2781,7 @@ async def _run_chainlit_ask_user(args: dict[str, Any]) -> str:
             name="Human loop · ask user",
             type="run",
             tags=["human-loop", "ask-user"],
+            default_open=False,
         ) as ask_step:
             ask_step.input = {"question": q, "timeout_seconds": tmo}
             res = await cl.AskUserMessage(content=q, timeout=tmo, raise_on_timeout=False).send()
@@ -3407,22 +3411,26 @@ async def _run_openai_with_mcp(user_text: str, ws: WebsocketSession) -> str:
                                         "Reuse the JSON below; do not call the same read again unless you need fresh data.]\n\n"
                                         + sess_hit
                                     )
-                                    async with cl.Step(
-                                        name=_mcp_chainlit_step_title(
-                                            mcp_conn, real_name, args, suffix=" (session cache)"
-                                        ),
-                                        type="run",
-                                        tags=_mcp_chainlit_step_tags(
-                                            mcp_conn, ["cached", "session-cache"], real_name
-                                        ),
-                                        default_open=_mcp_step_default_open(mcp_conn, real_name),
-                                    ) as mcp_step:
-                                        mcp_step.input = args
-                                        mcp_step.output = (
-                                            tool_text
-                                            if len(tool_text) <= _step_preview
-                                            else tool_text[:_step_preview] + "…"
-                                        )
+                                    # Models often call getJiraIssue again on every workflow turn; we still return cache
+                                    # to the LLM but skip a Chainlit Step by default (otherwise the UI fills with
+                                    # identical “session cache” rows). Set CHAINLIT_MCP_STEP_ON_SESSION_CACHE=1 to show.
+                                    if _env_truthy("CHAINLIT_MCP_STEP_ON_SESSION_CACHE", default=False):
+                                        async with cl.Step(
+                                            name=_mcp_chainlit_step_title(
+                                                mcp_conn, real_name, args, suffix=" (session cache)"
+                                            ),
+                                            type="run",
+                                            tags=_mcp_chainlit_step_tags(
+                                                mcp_conn, ["cached", "session-cache"], real_name
+                                            ),
+                                            default_open=_mcp_step_default_open(mcp_conn, real_name),
+                                        ) as mcp_step:
+                                            mcp_step.input = args
+                                            mcp_step.output = (
+                                                tool_text
+                                                if len(tool_text) <= _step_preview
+                                                else tool_text[:_step_preview] + "…"
+                                            )
                                 elif (
                                     _env_truthy("CHAINLIT_MCP_SESSION_DEDUP_QASE_CREATES", default=True)
                                     and _mcp_connection_or_op_is_qase(mcp_conn, real_name)
