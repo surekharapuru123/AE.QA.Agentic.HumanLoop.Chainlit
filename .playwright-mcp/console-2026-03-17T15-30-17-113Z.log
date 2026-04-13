@@ -1,0 +1,9 @@
+[   46324ms] [WARNING] <meta name="apple-mobile-web-app-capable" content="yes"> is deprecated. Please include <meta name="mobile-web-app-capable" content="yes"> @ https://aenetworks.oktapreview.com/login/token/redirect?stateToken=02.id.72vxZVW_HxSATbz5bStaX7R1Rg9rfmL9Fwseq4nB:0
+[   51098ms] [ERROR] Refused to execute script from 'https://qa3.gps.aegm.com/CustomError.html?aspxerrorpath=/scripts/js/html5shiv.js' because its MIME type ('text/html') is not executable, and strict MIME type checking is enabled. @ https://qa3.gps.aegm.com/Dashboard/Index:0
+[   51953ms] [ERROR] Refused to execute script from 'https://qa3.gps.aegm.com/CustomError.html?aspxerrorpath=/Scripts/chartdata.json' because its MIME type ('text/html') is not executable, and strict MIME type checking is enabled. @ https://qa3.gps.aegm.com/Dashboard/Index:0
+[   83124ms] [ERROR] Refused to execute script from 'https://qa3.gps.aegm.com/CustomError.html?aspxerrorpath=/scripts/js/html5shiv.js' because its MIME type ('text/html') is not executable, and strict MIME type checking is enabled. @ https://qa3.gps.aegm.com/Fulfillment/FulfillmentCart:0
+[  504523ms] TypeError: e.preventDefault is not a function
+    at content (https://qa3.gps.aegm.com/Scripts/controllers/FulfillmentCartViewModel.js?v=65:2635:35)
+    at init._appendContent (https://qa3.gps.aegm.com/scripts/lib/kendo.all.min.js:20:14130)
+    at init._show (https://qa3.gps.aegm.com/scripts/lib/kendo.all.min.js:20:14907)
+    at https://qa3.gps.aegm.com/scripts/lib/kendo.all.min.js:20:13710

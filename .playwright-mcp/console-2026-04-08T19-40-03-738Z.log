@@ -1,0 +1,2 @@
+[     758ms] [ERROR] Failed to load resource: the server responded with a status of 404 () @ https://your-jira-instance.atlassian.net/browse/GPS-7525:0
+[    1672ms] [ERROR] Failed to load resource: the server responded with a status of 404 () @ https://your-jira-instance.atlassian.net/favicon.ico:0

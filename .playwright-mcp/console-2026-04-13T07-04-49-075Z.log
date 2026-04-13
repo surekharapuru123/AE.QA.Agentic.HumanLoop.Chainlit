@@ -1,0 +1,2 @@
+[     381ms] [LOG] url_passthrough = true! @ :0
+[     741ms] [ERROR] Failed to load resource: net::ERR_BLOCKED_BY_RESPONSE.NotSameOriginAfterDefaultedToSameOriginByCoep @ https://bat.bing.com/action/0?ti=187161146&Ver=2:0

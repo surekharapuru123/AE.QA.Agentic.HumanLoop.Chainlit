@@ -1,0 +1,451 @@
+- generic [ref=e1]:
+  - generic [ref=e2]:
+    - generic [ref=e6]:
+      - text: Join our free walkthrough webinar on April 20 at
+      - link "10 AM CEST" [ref=e7] [cursor=pointer]:
+        - /url: https://qase-io.zoom.us/webinar/register/9317264773886/WN_rHpJ9f0LSHixBcpV6GmNlw
+      - text: or
+      - link "11 PM EDT" [ref=e8] [cursor=pointer]:
+        - /url: https://qase-io.zoom.us/webinar/register/9317264773886/WN_gp9panB8Sp2AhbfTouzO2g
+      - text: to learn more!
+    - banner [ref=e9]:
+      - generic [ref=e11]:
+        - link "home" [ref=e12] [cursor=pointer]:
+          - /url: /
+          - img "Qase logo" [ref=e13]
+        - navigation [ref=e14]:
+          - generic [ref=e15]:
+            - link "Platform" [ref=e16] [cursor=pointer]:
+              - /url: /product
+            - link "AI Testing" [ref=e17] [cursor=pointer]:
+              - /url: /ai-software-testing
+            - button "Resources Arrow Pointing down" [ref=e19] [cursor=pointer]:
+              - generic [ref=e20]: Resources
+              - img "Arrow Pointing down" [ref=e21]
+            - link "Enterprise" [ref=e22] [cursor=pointer]:
+              - /url: /enterprise
+            - link "Pricing" [ref=e23] [cursor=pointer]:
+              - /url: /pricing
+        - generic [ref=e26]:
+          - link "Get a Demo" [ref=e27] [cursor=pointer]:
+            - /url: /get-demo
+          - generic [ref=e28]: "|"
+          - link "Log in" [ref=e29] [cursor=pointer]:
+            - /url: https://app.qase.io/login
+          - link "Start 14 Day Trial" [ref=e31] [cursor=pointer]:
+            - /url: https://app.qase.io/signup?plan=business
+            - generic [ref=e34]: Start 14 Day Trial
+    - generic [ref=e36]:
+      - generic [ref=e38]:
+        - generic [ref=e39]:
+          - heading "AI-powered software" [level=1] [ref=e42]
+          - heading "testing platform" [level=1] [ref=e45]
+        - generic [ref=e46]:
+          - paragraph [ref=e49]: Boost your software delivery speed and quality with an AI-first test management platform.
+          - generic [ref=e52]:
+            - link "Start 14 Day Trial" [ref=e53] [cursor=pointer]:
+              - /url: https://app.qase.io/signup?plan=business
+              - generic [ref=e56]: Start 14 Day Trial
+            - link "Get a Demo" [ref=e57] [cursor=pointer]:
+              - /url: /get-demo
+              - generic [ref=e60]: Get a Demo
+            - emphasis [ref=e62]: No credit card required
+      - generic [ref=e65]:
+        - generic [ref=e66]: USed by teams at
+        - generic [ref=e68]:
+          - generic [ref=e69]:
+            - img "Suse Logo" [ref=e70]
+            - img "Rakuten Logo" [ref=e71]
+            - img "Asana logo" [ref=e72]
+            - img "Seat Geek Logo" [ref=e73]
+            - img "Wolt Logo" [ref=e74]
+            - img "Bitly Logo" [ref=e75]
+            - img "Elgato Logo" [ref=e76]
+            - img "Crypto.com Logo" [ref=e77]
+          - generic [ref=e78]:
+            - img "Suse Logo" [ref=e79]
+            - img "Rakuten Logo" [ref=e80]
+            - img "Asana logo" [ref=e81]
+            - img "Seat Geek Logo" [ref=e82]
+            - img "Wolt Logo" [ref=e83]
+            - img "Bitly Logo" [ref=e84]
+            - img "Elgato Logo" [ref=e85]
+            - img "Crypto.com Logo" [ref=e86]
+    - generic [ref=e90]:
+      - generic [ref=e91]:
+        - heading "Engineered for speed, designed for ease-of-use." [level=2] [ref=e94]
+        - generic [ref=e95]:
+          - link "Start 14 Day Trial" [ref=e96] [cursor=pointer]:
+            - /url: https://app.qase.io/signup?plan=business
+            - generic [ref=e99]: Start 14 Day Trial
+          - emphasis [ref=e101]: No credit card required
+      - generic [ref=e102]:
+        - generic [ref=e104]:
+          - heading "Run tests up to 90% faster" [level=3] [ref=e105]
+          - paragraph [ref=e106]: Our cutting-edge modern UI/UX facilitates best practices intuitively and brings testing in to a single workspace.
+        - generic [ref=e108]:
+          - heading "Supercharge your testing with AI" [level=3] [ref=e109]
+          - paragraph [ref=e110]:
+            - text: Use AIDEN, our
+            - link "AI Software Testing Agent" [ref=e111] [cursor=pointer]:
+              - /url: /ai-software-testing
+              - strong [ref=e112]: AI Software Testing Agent
+            - text: ", for AI test conversion, generation, analysis and execution."
+      - generic [ref=e113]:
+        - generic [ref=e114]:
+          - generic [ref=e115]:
+            - heading "Innovation" [level=3] [ref=e116]
+            - paragraph [ref=e117]: Built by testers, Qase delivers enterprise-level performance to elevate all aspects of testing orchestration.
+          - generic [ref=e118]:
+            - link "Test authoring Arrow Pointing Right Up Arrow pointing down right" [ref=e120] [cursor=pointer]:
+              - /url: /product
+              - generic [ref=e121]:
+                - generic [ref=e122]: Test authoring
+                - generic [ref=e123]:
+                  - img "Arrow Pointing Right Up"
+                  - img "Arrow pointing down right"
+            - link "Test management Arrow Pointing Right Up Arrow pointing down right" [ref=e127] [cursor=pointer]:
+              - /url: /product
+              - generic [ref=e128]:
+                - generic [ref=e129]: Test management
+                - generic [ref=e130]:
+                  - img "Arrow Pointing Right Up"
+                  - img "Arrow pointing down right"
+            - link "Requirements traceability Arrow Pointing Right Up Arrow pointing down right" [ref=e134] [cursor=pointer]:
+              - /url: /product
+              - generic [ref=e135]:
+                - generic [ref=e136]: Requirements traceability
+                - generic [ref=e137]:
+                  - img "Arrow Pointing Right Up"
+                  - img "Arrow pointing down right"
+            - link "Reporting + analysis Arrow Pointing Right Up Arrow pointing down right" [ref=e141] [cursor=pointer]:
+              - /url: /product
+              - generic [ref=e142]:
+                - generic [ref=e143]: Reporting + analysis
+                - generic [ref=e144]:
+                  - img "Arrow Pointing Right Up"
+                  - img "Arrow pointing down right"
+        - generic [ref=e148]:
+          - heading "Stay in the flow with 35+ integrations" [level=3] [ref=e149]
+          - paragraph [ref=e150]: Combine all your testing activities under a single workspace. There’s no need to leave Qase.
+    - generic [ref=e153]:
+      - heading "One workspace for manual + automated tests" [level=2] [ref=e156]
+      - generic [ref=e157]:
+        - generic [ref=e158]:
+          - generic [ref=e159]:
+            - heading "Manual software testing" [level=3] [ref=e161]
+            - paragraph [ref=e163]: Qase has a rich set of features for manual testers to replace outdated test management solutions.
+            - list [ref=e164]:
+              - listitem [ref=e165]:
+                - generic [ref=e167]: Test suites, cases, and runs
+              - listitem [ref=e168]:
+                - generic [ref=e170]: Shared steps
+              - listitem [ref=e171]:
+                - generic [ref=e173]: Mindmap
+              - listitem [ref=e174]:
+                - generic [ref=e176]: Test run wizard
+          - link "Try it now →" [ref=e177] [cursor=pointer]:
+            - /url: https://app.qase.io/signup?plan=business
+            - generic [ref=e180]: Try it now →
+        - generic [ref=e181]:
+          - img "Qase Screenshot - Control System"
+        - generic [ref=e182]:
+          - 'img "Qase Screenshot: Pytest code snippet"'
+        - generic [ref=e183]:
+          - generic [ref=e184]:
+            - heading "Automated software testing" [level=3] [ref=e186]
+            - paragraph [ref=e188]: Qase integrates with popular software testing frameworks and helps to analyze their execution in realtime.
+            - list [ref=e189]:
+              - listitem [ref=e190]:
+                - generic [ref=e192]: Test automation reports
+              - listitem [ref=e193]:
+                - generic [ref=e195]: Live documentation
+              - listitem [ref=e196]:
+                - generic [ref=e198]: 35+ supported frameworks
+          - link "Try it now →" [ref=e199] [cursor=pointer]:
+            - /url: https://app.qase.io/signup?plan=business
+            - generic [ref=e202]: Try it now →
+        - generic [ref=e203]:
+          - generic [ref=e204]:
+            - heading "Enhance data analysis with customizable dashboards" [level=3] [ref=e206]
+            - paragraph [ref=e208]: Make data-informed decisions with shareable, easy-to-understand reports that cover every phase of the testing cycle.
+            - list [ref=e209]:
+              - listitem [ref=e210]:
+                - generic [ref=e212]: Customizable drag-and-drop widgets
+              - listitem [ref=e213]:
+                - generic [ref=e215]: RBAC sharable report links
+              - listitem [ref=e216]:
+                - generic [ref=e218]: Data for every test step
+          - link "Try it now →" [ref=e219] [cursor=pointer]:
+            - /url: https://app.qase.io/signup?plan=business
+            - generic [ref=e222]: Try it now →
+        - generic [ref=e223]:
+          - 'img "Qase screenshot: Customizable Dashboards for analysis"'
+    - generic [ref=e224]:
+      - generic [ref=e227]:
+        - heading "What our customers say" [level=2] [ref=e229]
+        - paragraph [ref=e231]: Real reviews collected from third-party review sites or full customer case studies.
+      - generic [ref=e233]:
+        - generic [ref=e234]:
+          - generic [ref=e235]:
+            - generic [ref=e236]:
+              - heading "5x faster testing" [level=3] [ref=e237]
+              - paragraph [ref=e238]: "\"The advantages of Qase are the clear user interface, integrations, and giving reviews on test cases. Testing has become more fun and much faster. We’re now doing more tests in 2 days than before in 2 weeks.\""
+              - generic [ref=e239]:
+                - generic [ref=e240]:
+                  - img "Peter K. Head of QA photo"
+                - generic [ref=e241]:
+                  - generic [ref=e242]: Peter K.
+                  - generic [ref=e243]: Head of QA
+            - generic [ref=e244]:
+              - heading "Game-changer" [level=3] [ref=e245]
+              - paragraph [ref=e246]: "\"Overall, Qase is a game-changer for test management. It has significantly improved our testing processes, collaboration, and productivity. Highly recommended for any team looking to enhance their test management capabilities!\""
+              - generic [ref=e249]:
+                - generic [ref=e250]: Mikhail T.
+                - generic [ref=e251]: QA Engineer
+            - generic [ref=e252]:
+              - heading "Brings the team together" [level=3] [ref=e253]
+              - paragraph [ref=e254]: “Qase’s Jira integration has been transformative. It allows us to document and attach test scenarios or executions directly to Jira tickets, providing seamless visibility and communication between the testing and development teams.”
+              - generic [ref=e257]:
+                - link "Alisa Demennikova" [ref=e259] [cursor=pointer]:
+                  - /url: https://www.linkedin.com/in/alicedmn/?ref=qase.io
+                - generic [ref=e260]: Director of Quality Assurance
+          - generic [ref=e261]:
+            - generic [ref=e262]:
+              - heading "5x faster testing" [level=3] [ref=e263]
+              - paragraph [ref=e264]: "\"The advantages of Qase are the clear user interface, integrations, and giving reviews on test cases. Testing has become more fun and much faster. We’re now doing more tests in 2 days than before in 2 weeks.\""
+              - generic [ref=e265]:
+                - generic [ref=e266]:
+                  - img "Peter K. Head of QA photo"
+                - generic [ref=e267]:
+                  - generic [ref=e268]: Peter K.
+                  - generic [ref=e269]: Head of QA
+            - generic [ref=e270]:
+              - heading "Game-changer" [level=3] [ref=e271]
+              - paragraph [ref=e272]: "\"Overall, Qase is a game-changer for test management. It has significantly improved our testing processes, collaboration, and productivity. Highly recommended for any team looking to enhance their test management capabilities!\""
+              - generic [ref=e275]:
+                - generic [ref=e276]: Mikhail T.
+                - generic [ref=e277]: QA Engineer
+            - generic [ref=e278]:
+              - heading "Brings the team together" [level=3] [ref=e279]
+              - paragraph [ref=e280]: “Qase’s Jira integration has been transformative. It allows us to document and attach test scenarios or executions directly to Jira tickets, providing seamless visibility and communication between the testing and development teams.”
+              - generic [ref=e283]:
+                - link "Alisa Demennikova" [ref=e285] [cursor=pointer]:
+                  - /url: https://www.linkedin.com/in/alicedmn/?ref=qase.io
+                - generic [ref=e286]: Director of Quality Assurance
+        - generic [ref=e287]:
+          - generic [ref=e288]:
+            - generic [ref=e289]:
+              - heading "Be-all-end-all QA solution" [level=3] [ref=e290]
+              - paragraph [ref=e291]: "\"It truly has all you need as a QA Engineer. From requirements creation, test cases, test plans, test run monitoring. Also great queries and dashboards for monitoring the quality efforts and great third-party integration with a bunch of vendors like Cypress, Playwright, Cucumber and Jira.\""
+              - generic [ref=e294]:
+                - generic [ref=e295]: Manuel P.
+                - generic [ref=e296]: QA Engineer
+            - generic [ref=e297]:
+              - heading "Exceptional support" [level=3] [ref=e298]
+              - paragraph [ref=e299]: "\"What truly distinguishes Qase is its exceptional customer support. Their technical team went above and beyond, providing hands-on assistance to ensure a smooth setup and seamless integration of Qase with our pipeline.\""
+              - generic [ref=e302]:
+                - generic [ref=e303]: Ruben J.
+                - generic [ref=e304]: QA Manager
+            - generic [ref=e305]:
+              - heading "Rapidly scale testing" [level=3] [ref=e306]
+              - paragraph [ref=e307]: "\"We needed to rapidly scale our testing and enable non-QA engineers to collaborate. It was important to be able to painlessly convince and then onboard our teams to a test management platform. Qase is so intuitive that this was easily done.\""
+              - generic [ref=e308]:
+                - generic [ref=e309]:
+                  - img "Mikko V. QA Lead Photo"
+                - generic [ref=e310]:
+                  - generic [ref=e311]: Mikko V.
+                  - generic [ref=e312]: QA Lead
+            - generic [ref=e313]:
+              - heading "Modern, easy to use" [level=3] [ref=e314]
+              - paragraph [ref=e315]: "\"The platform is modern, easy to use and integrates with several other tools such as Cypress and Jira. I currently use the tool frequently as it has had a positive impact. By having an easy-to-use interface and offering the option to create shared steps, this ends up speeding up the test case creation process.\""
+              - generic [ref=e316]:
+                - generic [ref=e317]:
+                  - img "Raquel O. QA Engineer Photo"
+                - generic [ref=e318]:
+                  - generic [ref=e319]: Raquel O.
+                  - generic [ref=e320]: QA Engineer
+          - generic [ref=e321]:
+            - generic [ref=e322]:
+              - heading "Be-all-end-all QA solution" [level=3] [ref=e323]
+              - paragraph [ref=e324]: "\"It truly has all you need as a QA Engineer. From requirements creation, test cases, test plans, test run monitoring. Also great queries and dashboards for monitoring the quality efforts and great third-party integration with a bunch of vendors like Cypress, Playwright, Cucumber and Jira.\""
+              - generic [ref=e327]:
+                - generic [ref=e328]: Manuel P.
+                - generic [ref=e329]: QA Engineer
+            - generic [ref=e330]:
+              - heading "Exceptional support" [level=3] [ref=e331]
+              - paragraph [ref=e332]: "\"What truly distinguishes Qase is its exceptional customer support. Their technical team went above and beyond, providing hands-on assistance to ensure a smooth setup and seamless integration of Qase with our pipeline.\""
+              - generic [ref=e335]:
+                - generic [ref=e336]: Ruben J.
+                - generic [ref=e337]: QA Manager
+            - generic [ref=e338]:
+              - heading "Rapidly scale testing" [level=3] [ref=e339]
+              - paragraph [ref=e340]: "\"We needed to rapidly scale our testing and enable non-QA engineers to collaborate. It was important to be able to painlessly convince and then onboard our teams to a test management platform. Qase is so intuitive that this was easily done.\""
+              - generic [ref=e341]:
+                - generic [ref=e342]:
+                  - img "Mikko V. QA Lead Photo"
+                - generic [ref=e343]:
+                  - generic [ref=e344]: Mikko V.
+                  - generic [ref=e345]: QA Lead
+            - generic [ref=e346]:
+              - heading "Modern, easy to use" [level=3] [ref=e347]
+              - paragraph [ref=e348]: "\"The platform is modern, easy to use and integrates with several other tools such as Cypress and Jira. I currently use the tool frequently as it has had a positive impact. By having an easy-to-use interface and offering the option to create shared steps, this ends up speeding up the test case creation process.\""
+              - generic [ref=e349]:
+                - generic [ref=e350]:
+                  - img "Raquel O. QA Engineer Photo"
+                - generic [ref=e351]:
+                  - generic [ref=e352]: Raquel O.
+                  - generic [ref=e353]: QA Engineer
+    - generic [ref=e357]:
+      - generic [ref=e358]:
+        - generic [ref=e359]: Case Study
+        - generic [ref=e360]:
+          - heading "How Wolt optimized their testing for growth" [level=2] [ref=e362]
+          - generic [ref=e364]: Wolt has a team of 400+ developers and 15 QA engineers. Find out how the European food delivery giant made testing more efficient and scalable with Qase.
+        - link "Learn more" [ref=e365] [cursor=pointer]:
+          - /url: https://qase.io/blog/wolt-optimized-their-testing-for-growth-with-qase/
+          - generic [ref=e368]: Learn more
+      - generic [ref=e369]:
+        - img "Man riding a bike, carrying a Wolt backpack"
+    - generic [ref=e372]:
+      - heading "We’re enterprise-ready." [level=2] [ref=e375]
+      - generic [ref=e376]:
+        - generic [ref=e378]:
+          - heading "Scale with Confidence" [level=3] [ref=e380]
+          - paragraph [ref=e381]: Dedicated infrastructure, data retention, and flexible API integrations help your QA ecosystem evolve as your teams and test volume grow
+        - generic [ref=e383]:
+          - heading "Enterprise SLA & Compliance" [level=3] [ref=e385]
+          - paragraph [ref=e386]: Top-tier SLAs with ISO/IEC 27001, SOC2, and GDPR compliance baked into every contract and workflow.
+        - generic [ref=e388]:
+          - heading "Enterprise Access and Control" [level=4] [ref=e390]
+          - paragraph [ref=e391]: SAML, SCIM, and Role-Based Access Control give you complete control over user roles and authentication with zero friction at scale.
+    - generic [ref=e394]:
+      - heading "Advance your QA testing in minutes, not months." [level=2] [ref=e396]
+      - generic [ref=e397]:
+        - link "Start 14 Day Trial" [ref=e398] [cursor=pointer]:
+          - /url: https://app.qase.io/signup?plan=business
+          - generic [ref=e401]: Start 14 Day Trial
+        - paragraph [ref=e402]: No credit card required
+    - generic [ref=e409]:
+      - generic [ref=e410]:
+        - heading "Sign up for the Qase newsletter" [level=4] [ref=e412]
+        - paragraph [ref=e413]:
+          - text: By submitting this form, you acknowledge and agree that Qase will process your personal information in accordance with our
+          - link "Privacy Policy." [ref=e414] [cursor=pointer]:
+            - /url: /privacy
+      - form "Email Form" [ref=e417]:
+        - generic [ref=e418]:
+          - textbox "Email*" [ref=e419]
+          - button "Subscribe" [ref=e420] [cursor=pointer]
+        - generic [ref=e421]:
+          - checkbox "Send me a newsletter with industry, event and Qase product updates.*" [ref=e422]
+          - generic [ref=e423] [cursor=pointer]: Send me a newsletter with industry, event and Qase product updates.*
+    - generic [ref=e427]:
+      - generic [ref=e428]:
+        - generic [ref=e429]:
+          - generic [ref=e430]: Platform
+          - link "Home" [ref=e431] [cursor=pointer]:
+            - /url: /
+          - link "Test Management Platform" [ref=e432] [cursor=pointer]:
+            - /url: /product
+          - link "AIDEN AI Software Testing" [ref=e433] [cursor=pointer]:
+            - /url: /ai-software-testing
+          - link "Automated Test Management" [ref=e434] [cursor=pointer]:
+            - /url: /automated-test-management
+          - link "MCP Model Context Protocol" [ref=e435] [cursor=pointer]:
+            - /url: https://qase.io/mcp-model-context-protocol
+          - link "Qase Roadmap" [ref=e436] [cursor=pointer]:
+            - /url: https://roadmap.qase.io/
+          - link "Integrations" [ref=e437] [cursor=pointer]:
+            - /url: /integrations
+        - generic [ref=e438]:
+          - generic [ref=e439]: Solutions
+          - link "For QA testers" [ref=e440] [cursor=pointer]:
+            - /url: /solutions/software-testers
+          - link "Enterprise" [ref=e441] [cursor=pointer]:
+            - /url: /enterprise
+          - link "Qase vs. TestRail" [ref=e442] [cursor=pointer]:
+            - /url: /qase-vs-testrail
+          - link "Qase vs. Xray" [ref=e443] [cursor=pointer]:
+            - /url: /qase-vs-xray
+          - link "Qase vs. TestMo" [ref=e444] [cursor=pointer]:
+            - /url: /qase-vs-testmo
+          - link "Qase vs. Practitest" [ref=e445] [cursor=pointer]:
+            - /url: /qase-vs-practitest
+          - link "Qase vs. Zephyr" [ref=e446] [cursor=pointer]:
+            - /url: /qase-vs-zephyr
+          - link "Qase vs. BrowserStack" [ref=e447] [cursor=pointer]:
+            - /url: /qase-vs-browserstack
+          - link "Qase vs. Tricentis qTest" [ref=e448] [cursor=pointer]:
+            - /url: /qase-vs-tricentist-qtest
+        - generic [ref=e449]:
+          - generic [ref=e450]: Resources
+          - link "Qase User Docs" [ref=e451] [cursor=pointer]:
+            - /url: https://docs.qase.io/
+          - link "Qase API Docs" [ref=e452] [cursor=pointer]:
+            - /url: https://developers.qase.io
+          - link "Qase Blog" [ref=e453] [cursor=pointer]:
+            - /url: https://qase.io/blog/
+          - link "Resource Library" [ref=e454] [cursor=pointer]:
+            - /url: /resources
+          - link "Webinars" [ref=e455] [cursor=pointer]:
+            - /url: https://help.qase.io/en/collections/3564512-webinars
+        - generic [ref=e456]:
+          - generic [ref=e457]: Company
+          - link "Pricing" [ref=e458] [cursor=pointer]:
+            - /url: /pricing
+          - link "Sustainability" [ref=e459] [cursor=pointer]:
+            - /url: /sustainability
+          - link "Terms of service" [ref=e460] [cursor=pointer]:
+            - /url: /terms
+          - link "Privacy policy" [ref=e461] [cursor=pointer]:
+            - /url: /privacy
+          - link "Trust Center" [ref=e462] [cursor=pointer]:
+            - /url: https://legal.qase.io/
+          - link "Careers" [ref=e463] [cursor=pointer]:
+            - /url: https://wellfound.com/company/qase-1
+          - link "Contact Us" [ref=e464] [cursor=pointer]:
+            - /url: mailto:support@qase.io
+        - generic [ref=e465]:
+          - generic [ref=e466]:
+            - img "ISO 27001 CERTIFIED"
+          - generic [ref=e467]:
+            - img "SOC2 TYPE II CERTIFIED"
+          - generic [ref=e468]:
+            - img "GDPR COMPLIANT"
+      - generic [ref=e469]:
+        - generic [ref=e470]: © Copyright 2026 Qase Inc. All rights reserved.
+        - link "Qase Logo" [ref=e471] [cursor=pointer]:
+          - /url: /
+          - img "Qase Logo" [ref=e472]
+        - generic [ref=e473]:
+          - link [ref=e474] [cursor=pointer]:
+            - /url: https://twitter.com/qase_io
+            - img [ref=e476]
+          - link [ref=e478] [cursor=pointer]:
+            - /url: https://www.linkedin.com/company/qaseio/
+            - img [ref=e480]
+          - link [ref=e482] [cursor=pointer]:
+            - /url: https://github.com/qase-tms
+          - link [ref=e483] [cursor=pointer]:
+            - /url: https://www.facebook.com/qase.io
+            - img [ref=e485]
+  - complementary [active]:
+    - dialog "Privacy Settings" [ref=e489]:
+      - generic [ref=e491]:
+        - img "Qase" [ref=e492]
+        - generic [ref=e493]:
+          - heading "Privacy Settings" [level=2] [ref=e494]
+          - generic: This site uses third-party website tracking technologies to provide and continually improve our services, and to display advertisements according to users' interests. I agree and may revoke or change my consent at any time with effect for the future.
+      - generic [ref=e495]:
+        - generic [ref=e496]:
+          - generic [ref=e497]:
+            - link "Open Privacy Policy" [ref=e498] [cursor=pointer]:
+              - /url: https://qase.io/privacy
+              - text: Privacy Policy
+            - button "More Information" [ref=e499] [cursor=pointer]
+          - link "Powered by Usercentrics Consent Management" [ref=e501] [cursor=pointer]:
+            - /url: https://www.usercentrics.com/consent-management-platform-powered-by-usercentrics/?utm_source=banner_uc&utm_medium=referral&utm_content=v3
+        - button "Accept" [ref=e504] [cursor=pointer]
+  - iframe [ref=e505]:
+    

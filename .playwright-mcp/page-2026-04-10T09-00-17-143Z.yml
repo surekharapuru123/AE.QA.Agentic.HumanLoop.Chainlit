@@ -1,0 +1,39 @@
+- generic [active] [ref=e1]:
+  - generic [ref=e3]:
+    - heading "GPS QA3" [level=1] [ref=e7]:
+      - img "GPS QA3" [ref=e9]
+    - main [ref=e13]:
+      - generic [ref=e16]:
+        - heading "A+E Global Media - Preview logo" [level=1] [ref=e18]:
+          - img "A+E Global Media - Preview logo" [ref=e19]
+        - generic [ref=e32]:
+          - heading "Sign In" [level=1] [ref=e35]
+          - generic [ref=e37]:
+            - generic [ref=e39]: Username
+            - textbox "Username" [disabled] [ref=e41]: qaauto.test@aenetworks.com
+          - group [ref=e43]:
+            - generic [ref=e44]:
+              - generic:
+                - generic:
+                  - checkbox "Keep me signed in" [disabled]
+                - generic: Keep me signed in
+          - generic [ref=e49]:
+            - button "Next" [disabled]:
+              - generic:
+                - status:
+                  - progressbar "Processing...":
+                    - img
+              - text: Next
+          - link "Unlock account?" [ref=e52] [cursor=pointer]
+          - link "Help" [ref=e54] [cursor=pointer]:
+            - /url: https://aenetworks.oktapreview.com/help/login
+            - text: Help
+            - img [ref=e55]
+  - generic [ref=e26]:
+    - paragraph [ref=e27]:
+      - text: Powered by
+      - link "Okta" [ref=e28] [cursor=pointer]:
+        - /url: https://www.okta.com/?internal_link=wic_login
+    - paragraph [ref=e29]:
+      - link "Privacy Policy" [ref=e30] [cursor=pointer]:
+        - /url: https://www.aenetworks.com/personnel-privacy-policy/

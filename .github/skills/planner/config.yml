@@ -1,0 +1,6 @@
+# Planner Agent Configuration
+# Override via workflow_dispatch input or repository_dispatch client_payload.gap_score_threshold
+
+# Minimum gap analysis score (0-5) required to PROCEED past Gate 1.
+# Score < threshold → STOP and generate gap report.
+gap_score_threshold: 1

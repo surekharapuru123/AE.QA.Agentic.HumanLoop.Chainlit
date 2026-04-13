@@ -1,0 +1,7 @@
+[     895ms] [ERROR] Refused to execute script from 'https://qa3.gps.aegm.com/CustomError.html?aspxerrorpath=/scripts/js/html5shiv.js' because its MIME type ('text/html') is not executable, and strict MIME type checking is enabled. @ https://qa3.gps.aegm.com/Fulfillment/FulfillmentCart:0
+[   38459ms] [ERROR] Refused to execute script from 'https://qa3.gps.aegm.com/CustomError.html?aspxerrorpath=/scripts/js/html5shiv.js' because its MIME type ('text/html') is not executable, and strict MIME type checking is enabled. @ https://qa3.gps.aegm.com/Fulfillment/FulfillmentCart:0
+[  334826ms] TypeError: e.preventDefault is not a function
+    at content (https://qa3.gps.aegm.com/Scripts/controllers/FulfillmentCartViewModel.js?v=65:2635:35)
+    at init._appendContent (https://qa3.gps.aegm.com/scripts/lib/kendo.all.min.js:20:14130)
+    at init._show (https://qa3.gps.aegm.com/scripts/lib/kendo.all.min.js:20:14907)
+    at https://qa3.gps.aegm.com/scripts/lib/kendo.all.min.js:20:13710

@@ -1,0 +1,5 @@
+[  136520ms] [WARNING] <meta name="apple-mobile-web-app-capable" content="yes"> is deprecated. Please include <meta name="mobile-web-app-capable" content="yes"> @ https://oktapreview.aegm.com/login/token/redirect?stateToken=02.id.BnS8wfGNowmnXWSKmYmYBn44Q-iwJs2emD3NHHg5:0
+[  138965ms] [ERROR] Failed to load resource: the server responded with a status of 404 () @ https://qa2.gps.aegm.com/scripts/js/html5shiv.js:0
+[  138965ms] [ERROR] Refused to execute script from 'https://qa2.gps.aegm.com/scripts/js/html5shiv.js' because its MIME type ('text/html') is not executable, and strict MIME type checking is enabled. @ https://qa2.gps.aegm.com/Dashboard/Index:0
+[  139079ms] [ERROR] Failed to load resource: the server responded with a status of 404 () @ https://qa2.gps.aegm.com/Scripts/chartdata.json:0
+[  139082ms] [ERROR] Refused to execute script from 'https://qa2.gps.aegm.com/Scripts/chartdata.json' because its MIME type ('text/html') is not executable, and strict MIME type checking is enabled. @ https://qa2.gps.aegm.com/Dashboard/Index:0
