@@ -12,7 +12,7 @@ You are the **Automation Agent**. Read the skill at `.github/skills/automation/S
 
 | Area | Approach |
 |------|----------|
-| DOM inspection | Playwright MCP: `browser_navigate`, `browser_snapshot`, `browser_click`, `browser_fill`, `browser_hover`, `browser_wait_for` as needed — **always inspect real DOM before coding** |
+| DOM inspection | Playwright MCP (`user-microsoft/playwright-mcp`): **`browser_navigate` → interact as needed → `browser_snapshot`** on the **real target screen** — **complete this before any `tests/` file writes** |
 | Qase | `user-qase`: `get_case`, `update_case`, `list_cases` |
 | Files | Write specs and page objects into the repo (`tests/`, `tests/pages/`) |
 | GitHub | `user-github` (or configured id): create **feature branch**, commit, **push**, open **PR** with generated tests |
@@ -31,12 +31,21 @@ You are the **Automation Agent**. Read the skill at `.github/skills/automation/S
 3. Use `browser_snapshot` to capture the DOM state.
 4. Extract all interactive elements: inputs, buttons, links, headings with their selectors.
 5. For multi-step flows (e.g., login → password page), snapshot each page after interactions.
+6. For **non-login** cases: keep using MCP (`browser_click`, `browser_hover`, `browser_fill`, `browser_wait_for`, `browser_navigate`) until the browser shows the **same surface the Qase steps describe** (grid, cart, dialog, etc.), then **`browser_snapshot` again** on that screen.
 
 **You MUST use the selectors from the real page inspection. Do NOT guess or invent selectors.**
 
+### Script generation gate (pass this before Step 3)
+
+**Ordering is mandatory:** do **not** create, edit, or paste content into any `tests/**/*.spec.ts` or `tests/pages/**/*.page.ts` until Step 2 is satisfied on the **target** screen.
+
+- Allowed before Step 3: `get_case`, `list_cases`, reading existing repo files, planning — **no new test or POM files**.
+- Required: at least one **`browser_snapshot`** whose captured URL/DOM is the **real screen** where the case’s actions run (not only the public home page or SSO unless the case is strictly pre-auth).
+- If you only snapshotted login or an intermediate search page, **continue MCP navigation** until you reach the feature screen, snapshot, **then** start Step 3.
+
 ## Step 3 - Generate Automation Scripts
 
-Generate Playwright TypeScript test scripts using REAL selectors from Step 2.
+Generate Playwright TypeScript test scripts using REAL selectors from Step 2 **after** the gate above.
 
 ### One Qase case → one `scripts[]` row
 

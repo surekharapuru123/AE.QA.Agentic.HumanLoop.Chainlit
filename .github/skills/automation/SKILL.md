@@ -62,6 +62,15 @@ Many apps split **search or list** steps from the screen where **row/cart/grid**
 
 Skipping ahead without a snapshot on the action surface is the main cause of wrong navigation and invented `#id` selectors.
 
+### Script generation gate (ordering — before Step 3)
+
+**Do not write or edit automation files until Playwright MCP has reached the real screen.**
+
+1. **No `tests/**/*.spec.ts` or `tests/pages/**/*.page.ts` writes** until you have used **`browser_navigate`** (and follow-up MCP tools as needed) and captured at least one **`browser_snapshot`** on the **target UI** for that Qase case (the surface where its steps execute).
+2. **Login-only cases:** the “target screen” may be the SSO/login flow; still snapshot each step of that flow.
+3. **Feature cases:** the “target screen” is **post-navigation** (e.g. list/cart/grid/dialog). If the first snapshot is only shell/login/search, **continue** with `browser_click` / `browser_hover` / `browser_wait_for` until the correct page is visible, **`browser_snapshot` again**, then generate code.
+4. **Step 3 starts only after** that final snapshot exists; selectors in POMs must come from **`elements[]` / navigation hints** on that snapshot (or earlier snapshots of the same controls if unchanged).
+
 ### Step 3: Generate Playwright Scripts
 
 **Pipeline contract — `scripts[]` vs Qase cases:**

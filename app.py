@@ -31,17 +31,33 @@ from dotenv import load_dotenv
 load_dotenv(_PROJECT_ROOT / ".env")
 
 
+def _env_truthy(key: str, default: bool = False) -> bool:
+    """Whether an env var is set to a truthy string (used before full module body loads)."""
+    v = os.getenv(key)
+    if v is None or str(v).strip() == "":
+        return default
+    return str(v).strip().lower() in ("1", "true", "yes", "on")
+
+
 def _parse_github_remote_url(url: str) -> tuple[str, str] | None:
-    """Return (owner, repo_slug) from a common GitHub remote URL, or None."""
+    """Return (owner, repo_slug) from a common GitHub remote URL, or None.
+
+    Repo slugs may contain dots (e.g. ``AE.QA.Agentic.HumanLoop.Chainlit``); patterns must not
+    treat the first ``.`` as the end of the name (that incorrectly yielded ``AE``).
+    """
     u = (url or "").strip()
     if not u:
         return None
-    m = re.match(r"https?://github\.com/([^/]+)/([^/.?#]+)", u)
+    m = re.match(r"https?://github\.com/([^/]+)/([^/?#]+)", u)
     if m:
-        return m.group(1), m.group(2).removesuffix(".git")
-    m = re.match(r"git@github\.com:([^/]+)/([^/.]+)", u)
+        repo = m.group(2).removesuffix(".git").strip().rstrip("/")
+        if repo:
+            return m.group(1), repo
+    m = re.match(r"git@github\.com:([^/]+)/(.+)", u)
     if m:
-        return m.group(1), m.group(2).removesuffix(".git")
+        repo = m.group(2).removesuffix(".git").strip()
+        if repo:
+            return m.group(1), repo
     return None
 
 
@@ -63,8 +79,8 @@ def _github_owner_repo_from_git_origin() -> tuple[str, str] | None:
     return _parse_github_remote_url(r.stdout.strip())
 
 
-def _resolved_github_owner_repo() -> tuple[str | None, str | None]:
-    """GitHub owner and repo slug for MCP and ``pr_url``. Env overrides git remote."""
+def _github_owner_repo_from_env_vars() -> tuple[str | None, str | None]:
+    """Parse owner/repo from ``GITHUB_REPOSITORY`` / ``ORCHESTRATOR_GITHUB_REPO`` or split env vars."""
     gh_full = (os.getenv("GITHUB_REPOSITORY") or os.getenv("ORCHESTRATOR_GITHUB_REPO") or "").strip()
     if gh_full and "/" in gh_full:
         o, _, r = gh_full.partition("/")
@@ -75,26 +91,307 @@ def _resolved_github_owner_repo() -> tuple[str | None, str | None]:
     gh_repo = (os.getenv("GITHUB_REPO_NAME") or os.getenv("GITHUB_DEFAULT_REPO") or "").strip()
     if gh_owner and gh_repo:
         return gh_owner, gh_repo
-    got = _github_owner_repo_from_git_origin()
-    if got:
-        return got[0], got[1]
+    return None, None
+
+
+def _resolved_github_owner_repo() -> tuple[str | None, str | None]:
+    """GitHub owner and repo for MCP / ``pr_url`` / pins.
+
+    By default (**git wins**): if ``git remote origin`` parses, use it so a wrong or truncated
+    ``GITHUB_REPOSITORY`` in ``.env`` (e.g. ``owner/AE``) does not override the real checkout.
+
+    Set ``CHAINLIT_GITHUB_REPOSITORY_TRUST_ENV=1`` to prefer ``.env`` when you intentionally target
+    a different repo than ``origin`` (no git metadata, or fork workflow).
+    """
+    git_pair = _github_owner_repo_from_git_origin()
+    trust_env = _env_truthy("CHAINLIT_GITHUB_REPOSITORY_TRUST_ENV", default=False)
+    env_pair = _github_owner_repo_from_env_vars()
+
+    if trust_env:
+        if env_pair[0] and env_pair[1]:
+            return env_pair
+        if git_pair:
+            return git_pair[0], git_pair[1]
+        return None, None
+
+    if git_pair:
+        return git_pair[0], git_pair[1]
+    if env_pair[0] and env_pair[1]:
+        return env_pair
     return None, None
 
 
 def _apply_github_repository_default_from_git() -> None:
-    """If ``GITHUB_REPOSITORY`` is unset, set it from ``origin`` so MCP/tools match this checkout."""
-    if (os.getenv("GITHUB_REPOSITORY") or os.getenv("ORCHESTRATOR_GITHUB_REPO") or "").strip():
+    """Seed ``GITHUB_REPOSITORY`` from ``origin`` when unset; fix wrong ``GITHUB_REPOSITORY`` vs ``origin``."""
+    has_full = bool((os.getenv("GITHUB_REPOSITORY") or os.getenv("ORCHESTRATOR_GITHUB_REPO") or "").strip())
+    has_split = bool(
+        (os.getenv("GITHUB_REPO_OWNER") or os.getenv("GITHUB_DEFAULT_OWNER") or "").strip()
+    ) and bool((os.getenv("GITHUB_REPO_NAME") or os.getenv("GITHUB_DEFAULT_REPO") or "").strip())
+
+    if not has_full and not has_split:
+        got = _github_owner_repo_from_git_origin()
+        if got:
+            os.environ.setdefault("GITHUB_REPOSITORY", f"{got[0]}/{got[1]}")
+
+    if has_full or (os.getenv("GITHUB_REPOSITORY") or "").strip():
+        _sync_github_repository_env_with_origin()
+
+
+def _sync_github_repository_env_with_origin() -> None:
+    """Align ``GITHUB_REPOSITORY`` with ``git remote origin`` when they disagree (unless trust-env)."""
+    if _env_truthy("CHAINLIT_GITHUB_REPOSITORY_TRUST_ENV", default=False):
         return
-    if (os.getenv("GITHUB_REPO_OWNER") or os.getenv("GITHUB_DEFAULT_OWNER") or "").strip() and (
-        os.getenv("GITHUB_REPO_NAME") or os.getenv("GITHUB_DEFAULT_REPO") or ""
-    ).strip():
+    gp = _github_owner_repo_from_git_origin()
+    if not gp:
         return
-    got = _github_owner_repo_from_git_origin()
-    if got:
-        os.environ.setdefault("GITHUB_REPOSITORY", f"{got[0]}/{got[1]}")
+    canon = f"{gp[0]}/{gp[1]}"
+    cur = (os.getenv("GITHUB_REPOSITORY") or "").strip()
+    if not cur or "/" not in cur:
+        os.environ["GITHUB_REPOSITORY"] = canon
+        return
+    o, _, r = cur.partition("/")
+    if o.strip().lower() == gp[0].lower() and r.strip().lower() == gp[1].lower():
+        return
+    os.environ["GITHUB_REPOSITORY"] = canon
 
 
 _apply_github_repository_default_from_git()
+
+# GitHub MCP tools where we must NOT rewrite ``owner``/``repo`` (search, fork source, profile).
+_GITHUB_SKIP_WORKSPACE_OWNER_REPO_PIN = frozenset(
+    {
+        "fork_repository",
+        "get_me",
+        "search_repositories",
+        "search_code",
+        "search_issues",
+        "search_pull_requests",
+        "search_users",
+    }
+)
+
+
+def _message_triggers_github_repo_local(user_text: str) -> bool:
+    """Slash commands (or a plain “fetch repo details” line) — no OpenAI / GitHub API."""
+    for line in user_text.splitlines():
+        t = line.strip().lower()
+        if t in ("/github-repo", "/current-repo", "/workspace-repo"):
+            return True
+        if t in (
+            "fetch current github repo details",
+            "fetch current git repo details",
+        ):
+            return True
+    return False
+
+
+def _message_triggers_git_branches_local(user_text: str) -> bool:
+    for line in user_text.splitlines():
+        t = line.strip().lower()
+        if t in ("/git-branches", "/branches", "/list-branches"):
+            return True
+    return False
+
+
+def _message_triggers_github_mcp_chainlit_instructions(user_text: str) -> bool:
+    for line in user_text.splitlines():
+        t = line.strip().lower()
+        if t in ("/github-mcp", "/github-mcp-connect", "/github-mcp-setup"):
+            return True
+    return False
+
+
+def _github_mcp_chainlit_integration_markdown() -> str:
+    """How to add GitHub MCP in Chainlit to mirror Cursor ``mcp.json`` (Copilot MCP URL + Authorization)."""
+    url = (os.getenv("GITHUB_MCP_URL") or "https://api.githubcopilot.com/mcp/").strip()
+    auth_hint = (os.getenv("GITHUB_MCP_AUTHORIZATION") or "").strip()
+    return (
+        "### GitHub MCP in Chainlit (match Cursor `mcp.json`)\n\n"
+        "Use this when your **Cursor** config uses a **remote** GitHub MCP, for example:\n\n"
+        "```json\n"
+        '"github": {\n'
+        '  "url": "https://api.githubcopilot.com/mcp/",\n'
+        '  "headers": { "Authorization": "<YOUR_TOKEN>" }\n'
+        "}\n"
+        "```\n\n"
+        "#### Option A — Remote HTTP in Chainlit UI\n\n"
+        "1. Open the **plug (MCP)** menu → **Add** / **Edit** a connection.\n"
+        "2. Choose **Streamable HTTP** or **HTTP** (remote MCP), per your Chainlit version — "
+        "**not** stdio, for this URL.\n"
+        f"3. **URL:** `{url}`\n"
+        "4. **Headers:** add **`Authorization`** with the **same value** you use in Cursor "
+        "(often a GitHub PAT as `ghp_…`, or `Bearer ghp_…` if the UI expects a scheme — match what works in Cursor).\n"
+        "5. Save, restart Chainlit if tools do not appear, then run **`/mcp-setup`** and confirm GitHub **`get_me`**.\n\n"
+        "#### Option B — Stdio bridge (same pattern as Atlassian)\n\n"
+        "1. Set **`GITHUB_MCP_URL`** (optional), **`GITHUB_MCP_AUTHORIZATION`** or **`GITHUB_TOKEN`** / **`GH_TOKEN`** in `.env`.\n"
+        "2. In MCP settings, use command: **`node chainlit-github-mcp.cjs`** (or `npm run mcp:github` from this repo; run **`npm install`** first so `mcp-remote` is present).\n"
+        "3. Run **`/mcp-setup`** and confirm GitHub tools (e.g. **`get_me`**).\n"
+        "If the bridge fails on OAuth against Copilot, use **Option A** (remote HTTP in the Chainlit UI) with the same URL and header.\n\n"
+        "#### Environment\n\n"
+        "For Option A, the vars below are mainly for this help text; you still paste the header in the UI. "
+        "For Option B, they are **required** for the bridge (same as `chainlit-atlassian-mcp.cjs` + Jira vars):\n\n"
+        f"- `GITHUB_MCP_URL` — default in this message: `{url}`\n"
+        + (
+            "- `GITHUB_MCP_AUTHORIZATION` — **set in `.env` only on your machine**; never commit. "
+            f"Currently **set** (value hidden) — paste the same string into the MCP **Authorization** header.\n"
+            if auth_hint
+            else "- `GITHUB_MCP_AUTHORIZATION` — optional; if unset, paste your PAT into the MCP header manually.\n"
+        )
+        + "\n"
+        "#### Repo access for `create_branch` / REST tools\n\n"
+        "Also set **`GITHUB_TOKEN`** (or **`GH_TOKEN`**) with **`repo`** scope and **`CHAINLIT_MCP_FULL_ENV=1`** "
+        "if you use the **stdio** GitHub server (`@modelcontextprotocol/server-github`) instead — "
+        "the Copilot-hosted URL may use different auth; use whichever matches your working Cursor setup.\n\n"
+        "**Security:** If a PAT was ever pasted into chat or committed, **revoke it** on GitHub and create a new one.\n\n"
+        "Other shortcuts: **`/github-repo`** (workspace slug), **`/git-branches`** (local git)."
+    )
+
+
+def _git_branches_local_report() -> str:
+    """Local ``git`` output — no GitHub token; complements MCP ``list_branches``."""
+    parts: list[str] = ["### Branches (local `git`, no GitHub API)\n"]
+    try:
+        r = subprocess.run(
+            ["git", "branch", "-a"],
+            cwd=_PROJECT_ROOT,
+            capture_output=True,
+            text=True,
+            timeout=15,
+            check=False,
+        )
+        body = ((r.stdout or r.stderr) or "").strip()
+        parts.append(f"```\n{body or '(empty)'}\n```\n")
+    except OSError as e:
+        parts.append(f"Could not run `git branch -a`: {e}\n")
+    try:
+        r2 = subprocess.run(
+            ["git", "remote", "show", "origin"],
+            cwd=_PROJECT_ROOT,
+            capture_output=True,
+            text=True,
+            timeout=20,
+            check=False,
+        )
+        for line in (r2.stdout or "").splitlines():
+            if "HEAD branch" in line:
+                parts.append(f"\n- **{line.strip()}**")
+                break
+    except OSError:
+        pass
+    parts.extend(
+        [
+            "\n\n**Remote branch list via API:** use GitHub MCP **`list_branches`** — not **`get_file_contents`** on `.git/HEAD` (invalid for the API).",
+            "\n\n**404 on `create_branch` / repo APIs** with the correct owner/repo usually means **the token cannot access that repository** "
+            "(fine-grained token missing this repo, classic PAT without **repo**, wrong GitHub user, or **SSO** not authorized). "
+            "Fix PAT + **`CHAINLIT_MCP_FULL_ENV=1`**, restart Chainlit, then **`/mcp-setup`**.",
+        ]
+    )
+    return "".join(parts)
+
+
+def _github_repo_local_report() -> str:
+    """Markdown: owner/repo from env + git, clone URL, and GitHub token hint for MCP."""
+    go, gr = _resolved_github_owner_repo()
+    raw_remote = ""
+    try:
+        r = subprocess.run(
+            ["git", "remote", "get-url", "origin"],
+            cwd=_PROJECT_ROOT,
+            capture_output=True,
+            text=True,
+            timeout=5,
+            check=False,
+        )
+        if r.returncode == 0 and (r.stdout or "").strip():
+            raw_remote = (r.stdout or "").strip()
+    except OSError:
+        pass
+    env_full = (os.getenv("GITHUB_REPOSITORY") or os.getenv("ORCHESTRATOR_GITHUB_REPO") or "").strip()
+    parts: list[str] = [
+        "### GitHub repository (this Chainlit workspace)",
+        "",
+    ]
+    if go and gr:
+        parts.extend(
+            [
+                f"- **Owner:** `{go}`",
+                f"- **Repo:** `{gr}`",
+                f"- **Full name:** `{go}/{gr}`",
+                f"- **Web:** https://github.com/{go}/{gr}",
+            ]
+        )
+    else:
+        parts.append(
+            "- **Could not resolve** owner/repo — use a git checkout with **`origin`**, or set **`GITHUB_REPOSITORY`** in `.env`."
+        )
+    if raw_remote:
+        parts.append(f"- **`git remote get-url origin`:** `{raw_remote}`")
+    if env_full:
+        parts.append(f"- **`GITHUB_REPOSITORY` / `ORCHESTRATOR_GITHUB_REPO` (after startup sync):** `{env_full}`")
+    parts.append(
+        "- **Resolution rule:** Owner/repo above follows **`git remote origin`** when this folder is a clone "
+        "(so a typo like `owner/AE` in `.env` is corrected). Set **`CHAINLIT_GITHUB_REPOSITORY_TRUST_ENV=1`** to prefer `.env` over `origin`."
+    )
+    tok = (os.getenv("GITHUB_TOKEN") or os.getenv("GH_TOKEN") or "").strip()
+    parts.extend(
+        [
+            "",
+            "**GitHub MCP authentication:** Issue/PR/file APIs need a PAT. Set **`GITHUB_TOKEN`** (or **`GH_TOKEN`**) in `.env` "
+            "with **`repo`** scope, and **`CHAINLIT_MCP_FULL_ENV=1`** so the GitHub MCP child process inherits it, then restart Chainlit.",
+        ]
+    )
+    if not tok:
+        parts.append(
+            "- **Token in this process:** not set — expect **`Requires authentication`** from GitHub MCP on create/update calls."
+        )
+    else:
+        parts.append(
+            "- **Token in this process:** present (value not shown). If MCP still errors, restart Chainlit after editing `.env`."
+        )
+    parts.extend(
+        [
+            "",
+            "**If GitHub MCP returns 404** with the owner/repo above, the PAT often **cannot access this repo** "
+            "(token is for another user, missing **`repo`** scope, or **org SSO** not authorized). Confirm with **`/mcp-setup`** → **`get_me`**.",
+            "",
+            "Probe the live MCP connection with **`/mcp-setup`** (GitHub **`get_me`**). Local branch tips: **`/git-branches`**.",
+        ]
+    )
+    return "\n".join(parts)
+
+
+def _pin_github_mcp_owner_repo(mcp_conn: str, real_name: str, args: dict) -> dict:
+    """Force ``owner``/``repo`` to match :func:`_resolved_github_owner_repo` for repo-scoped GitHub tools.
+
+    Applies to any tool call that includes both ``owner`` and ``repo`` (e.g. ``get_file_contents``), so the model
+    cannot use truncated or example slugs like ``AE``. Skipped for search/fork/profile tools — set
+    ``CHAINLIT_GITHUB_PIN_WORKSPACE_REPO=0`` to talk to arbitrary repositories on purpose.
+    """
+    if not _env_truthy("CHAINLIT_GITHUB_PIN_WORKSPACE_REPO", default=True):
+        return args
+    if "github" not in (mcp_conn or "").lower():
+        return args
+    if real_name in _GITHUB_SKIP_WORKSPACE_OWNER_REPO_PIN:
+        return args
+    wo, wr = _resolved_github_owner_repo()
+    if not wo or not wr:
+        return args
+    if "owner" not in args or "repo" not in args:
+        return args
+    if str(args.get("owner", "")).strip() == wo and str(args.get("repo", "")).strip() == wr:
+        return args
+    return {**args, "owner": wo, "repo": wr}
+
+
+def _prepare_github_mcp_tool_args(mcp_conn: str, real_name: str, args: dict) -> dict:
+    """Pin ``owner``/``repo``, then apply defaults some GitHub tools expect (e.g. source ref for new branches)."""
+    out = _pin_github_mcp_owner_repo(mcp_conn, real_name, args)
+    if "github" not in (mcp_conn or "").lower() or not isinstance(out, dict):
+        return out
+    if real_name == "create_branch" and not str(out.get("from_branch") or "").strip():
+        dfb = (os.getenv("GITHUB_DEFAULT_BRANCH") or "main").strip() or "main"
+        out = {**out, "from_branch": dfb}
+    return out
 
 
 def _patch_mcp_stdio_for_chainlit() -> None:
@@ -288,13 +585,6 @@ def _format_connect_exception(exc: BaseException) -> str:
         seen += 1
         parts.append(f"Caused by: {type(cur).__name__}: {cur!s}")
     return "\n".join(parts)
-
-
-def _env_truthy(key: str, default: bool = False) -> bool:
-    v = os.getenv(key)
-    if v is None or str(v).strip() == "":
-        return default
-    return v.lower() in ("1", "true", "yes", "on")
 
 
 # --- Repo skills + rules (injected into OpenAI system prompt; MCP still executes via call_tool) ---
@@ -1268,9 +1558,9 @@ def _workflow_env_hints() -> str:
         parts.append(
             f"[GitHub **owner** / **repo** for this Chainlit app (resolved for **`create_pull_request`**, PRs, files): "
             f"**{gh_o}** / **{gh_r}**. "
-            "Resolution order: `GITHUB_REPOSITORY` or `ORCHESTRATOR_GITHUB_REPO`, else "
-            "`GITHUB_DEFAULT_OWNER`+`GITHUB_DEFAULT_REPO` / `GITHUB_REPO_OWNER`+`GITHUB_REPO_NAME`, "
-            "else **`git remote get-url origin`** for this checkout. "
+            "By default **`git remote origin`** wins over `.env` when both exist (fixes truncated `GITHUB_REPOSITORY`). "
+            "If you need `.env` to override `origin`, set **`CHAINLIT_GITHUB_REPOSITORY_TRUST_ENV=1`**. "
+            "If there is no git metadata, fall back to `GITHUB_REPOSITORY` / split env vars. "
             f"**Automation JSON `pr_url`:** `https://github.com/{gh_o}/{gh_r}/pull/<pr_number>` only — "
             "do **not** paste example repos from docs unless they match **this** `origin`. "
             "**`repo`** must match the exact GitHub slug. Verify PAT with **`get_me`**; discover with **`search_repositories`**.]"
@@ -2713,6 +3003,17 @@ async def _run_openai_with_mcp(user_text: str, ws: WebsocketSession) -> str:
             "Follow the **skills and rules** above for workflow, gates, and output shapes; use MCP for facts; "
             "never guess what you could fetch via MCP."
         )
+        _sys_go, _sys_gr = _resolved_github_owner_repo()
+        if _sys_go and _sys_gr:
+            system_body += (
+                f"\n\n**GitHub repo for this Chainlit workspace:** **`{_sys_go}/{_sys_gr}`** "
+                f"(from `GITHUB_REPOSITORY` / `ORCHESTRATOR_GITHUB_REPO`, or `git remote origin` on this app). "
+                "For **new branches**, **PRs**, **`create_pull_request`**, **`get_file_contents`**, and every GitHub MCP call, "
+                f"use **`owner`**=`{_sys_go}` and **`repo`**=`{_sys_gr}` unless the user explicitly names another repository. "
+                "README/skills may refer to **“AE.QA.Agentic”** as a product name — that string is **not** always the GitHub "
+                "`repo` slug for this checkout. Do **not** assume or output **`surekharapuru123/AE.QA.Agentic`** (or any other "
+                "`owner/repo`) from memory or examples when this paragraph gives a different pair."
+            )
         if _env_truthy("CHAINLIT_ASK_USER_TOOL", default=False) and any(
             r == _CHAINLIT_ASK_USER_OP for (_m, r) in routing.values()
         ):
@@ -3032,6 +3333,7 @@ async def _run_openai_with_mcp(user_text: str, ws: WebsocketSession) -> str:
                             _force_env_jira_cloud_id_for_atlassian_mcp(args, mcp_conn)
                         elif _mcp_connection_or_op_is_qase(mcp_conn, real_name):
                             _strip_jira_leakage_from_qase_mcp_args(args)
+                        args = _prepare_github_mcp_tool_args(mcp_conn, real_name, args)
                     if mcp_conn == _CHAINLIT_MCP_PLACEHOLDER and real_name == _CHAINLIT_ASK_USER_OP:
                         tool_text = await _run_chainlit_ask_user(args)
                     else:
@@ -3437,6 +3739,18 @@ async def _workflow_starter_categories(
                     label="MCP probe (local, no LLM)",
                     message="/mcp-setup",
                 ),
+                cl.Starter(
+                    label="Workspace GitHub repo (local, no LLM)",
+                    message="/github-repo",
+                ),
+                cl.Starter(
+                    label="GitHub MCP — Copilot URL (Cursor-style)",
+                    message="/github-mcp",
+                ),
+                cl.Starter(
+                    label="Local git branches (no LLM)",
+                    message="/git-branches",
+                ),
             ],
         ),
     ]
@@ -3506,6 +3820,18 @@ async def on_message(message: cl.Message) -> None:
         ).send()
         return
 
+    if _message_triggers_github_mcp_chainlit_instructions(user_text):
+        await cl.Message(content=_github_mcp_chainlit_integration_markdown()).send()
+        return
+
+    if _message_triggers_github_repo_local(user_text):
+        await cl.Message(content=_github_repo_local_report()).send()
+        return
+
+    if _message_triggers_git_branches_local(user_text):
+        await cl.Message(content=_git_branches_local_report()).send()
+        return
+
     if _message_triggers_local_mcp_probe(user_text):
         if _is_mcp_connectivity_checklist_only(user_text):
             await cl.Message(
@@ -3514,7 +3840,9 @@ async def on_message(message: cl.Message) -> None:
                     "**no OpenAI**). "
                     "For a silent run, send only **`/mcp-setup`** on one line.\n\n"
                     "**If GitHub returned 404:** `GITHUB_REPOSITORY` must use the **exact** repo name from github.com "
-                    "(this workspace folder is often `…HumanLoop.Chainlit` while the remote may differ)."
+                    "(this workspace folder is often `…HumanLoop.Chainlit` while the remote may differ). "
+                    "Send **`/github-repo`** for owner/repo from this checkout (**no OpenAI**). "
+                    "Send **`/github-mcp`** for GitHub MCP (Copilot URL + `Authorization` header) setup like Cursor `mcp.json`."
                 )
             ).send()
         report = await _run_mcp_connectivity_probe(sess)

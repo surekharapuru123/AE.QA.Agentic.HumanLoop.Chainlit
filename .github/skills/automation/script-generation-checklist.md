@@ -20,6 +20,11 @@
 - [ ] For feature areas beyond the shell, used menu → submenu navigation unless Qase gives a direct URL — no invented `goto('/made-up-path')` in generated code
 - [ ] Recorded real selectors for page objects
 
+### Gate — real screen before any script files (CRITICAL)
+- [ ] Did **not** create or edit any `tests/**/*.spec.ts` or `tests/pages/**/*.page.ts` until MCP navigation + snapshot were done on the **target** screen
+- [ ] Used **`browser_navigate`** and, where needed, **`browser_click` / `browser_hover` / `browser_fill` / `browser_wait_for`** so the browser shows the **same surface** as the Qase steps (not stopped on login/search-only unless the case is limited to that)
+- [ ] Called **`browser_snapshot`** **after** arriving on that target screen; final selectors for the case come from that snapshot (or an equivalent screen in the same flow)
+
 ### Selector Verification
 - [ ] Every selector in page objects comes from real DOM inspection
 - [ ] No selectors were guessed or invented

@@ -17,7 +17,7 @@ Use **`npm run chainlit:watch`** to restart the app on code changes. Starter sho
 
 **MCP connectivity:** In chat, send **`/mcp-setup`** (or the starter **MCP setup probe**) to run one minimal `call_tool` per connected server (Qase `list_projects`, GitHub `get_me`, Atlassian `atlassianUserInfo` / `getAccessibleAtlassianResources`, Playwright `browser_tabs` list) without calling OpenAI. See also `npm run mcp:setup` for a terminal reminder.
 
-In the Chainlit UI, connect MCP servers (plug icon): **Atlassian/Jira** (for example `node chainlit-atlassian-mcp.cjs` or your configured server), **Qase**, and **Playwright**. Add `OPENAI_API_KEY` to `.env` (see `.env.example`).
+In the Chainlit UI, connect MCP servers (plug icon): **Atlassian/Jira** (`node chainlit-atlassian-mcp.cjs`), **GitHub Copilot MCP** (`node chainlit-github-mcp.cjs` with `GITHUB_MCP_AUTHORIZATION` or `GITHUB_TOKEN` in `.env`), **Qase**, and **Playwright**. Add `OPENAI_API_KEY` to `.env` (see `.env.example`).
 
 To drive the full pipeline in chat, the assistant follows:
 

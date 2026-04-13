@@ -1,5 +1,10 @@
 # Test Generation Rules
 
+## Playwright MCP before new files (Automation Agent)
+
+- Use **`user-microsoft/playwright-mcp`** tools to **`browser_navigate`** to the app and reach the **real target screen** for the case (login + menus as needed), then **`browser_snapshot`**.
+- **Do not** add or change `tests/**/*.spec.ts` or `tests/pages/**/*.page.ts` until that snapshot on the target screen exists; selectors must be taken from MCP output, not invented.
+
 ## Page Object Model
 - Every page MUST have a corresponding page object class in `tests/pages/`
 - Page objects MUST use `Locator` typed properties, not raw selectors

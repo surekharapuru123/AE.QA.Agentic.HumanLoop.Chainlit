@@ -7,7 +7,8 @@
     "chainlit:watch": "chainlit run app.py -w",
     "setup:python": "pip install -r requirements.txt",
     "mcp:atlassian": "node chainlit-atlassian-mcp.cjs",
-    "mcp:setup": "node -e \"console.log('In Chainlit chat, send: /mcp-setup (or use the Setup starter) — one call_tool per MCP, no OpenAI.')\"",
+    "mcp:github": "node chainlit-github-mcp.cjs",
+    "mcp:setup": "node -e \"console.log('In Chainlit chat: /mcp-setup (MCP probe) or /github-mcp (GitHub MCP: HTTP in UI or stdio via npm run mcp:github).')\"",
     "test": "playwright test",
     "test:headed": "playwright test --headed",
     "test:chromium": "playwright test --project=chromium",
@@ -36,6 +37,7 @@
   },
   "devDependencies": {
     "@playwright/test": "^1.50.0",
+    "mcp-remote": "^0.1.38",
     "tsx": "^4.21.0",
     "typescript": "^5.7.0"
   }

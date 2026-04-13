@@ -1,14 +1,21 @@
 /**
- * Atlassian Rovo MCP → mcp-remote stdio bridge for Chainlit.
+ * GitHub Copilot MCP → mcp-remote stdio bridge for Chainlit.
  *
  * In Chainlit "Command" use (forward slashes; no unquoted backslashes):
- *   node chainlit-atlassian-mcp.cjs
+ *   node chainlit-github-mcp.cjs
  *
  * app.py sets the server process cwd to this repo so this path resolves. If it still fails,
  * use an absolute path to this file.
  *
  * Requires: `npm install` in this repo (devDependency `mcp-remote`).
- * Requires: JIRA_EMAIL + JIRA_MCP_API_TOKEN or JIRA_API_TOKEN in .env
+ * Requires: GITHUB_MCP_AUTHORIZATION or GITHUB_TOKEN (or GH_TOKEN) in .env
+ * Optional: GITHUB_MCP_URL (default https://api.githubcopilot.com/mcp/)
+ *
+ * Header sent to the remote matches Cursor `mcp.json`: Authorization value is used as-is
+ * (e.g. raw `ghp_…` or `Bearer ghp_…`).
+ *
+ * If `mcp-remote` fails against Copilot (OAuth discovery), use Chainlit remote HTTP + header
+ * instead — see chat command `/github-mcp` Option A.
  */
 "use strict";
 
@@ -21,18 +28,22 @@ process.chdir(projectRoot);
 
 require("dotenv").config({ path: path.join(projectRoot, ".env") });
 
-const email = process.env.JIRA_EMAIL;
-const token = process.env.JIRA_MCP_API_TOKEN || process.env.JIRA_API_TOKEN;
-if (!email || !token) {
+const url = (process.env.GITHUB_MCP_URL || "https://api.githubcopilot.com/mcp/").trim();
+const auth = (
+  process.env.GITHUB_MCP_AUTHORIZATION ||
+  process.env.GITHUB_TOKEN ||
+  process.env.GH_TOKEN ||
+  ""
+).trim();
+
+if (!auth) {
   console.error(
-    "chainlit-atlassian-mcp: set JIRA_EMAIL and JIRA_MCP_API_TOKEN (or JIRA_API_TOKEN) in .env",
+    "chainlit-github-mcp: set GITHUB_MCP_AUTHORIZATION or GITHUB_TOKEN (or GH_TOKEN) in .env",
   );
   process.exit(1);
 }
 
-const url = process.env.ATLASSIAN_MCP_URL || "https://mcp.atlassian.com/v1/mcp";
-const b64 = Buffer.from(`${email}:${token}`, "utf8").toString("base64");
-const header = `Authorization: Basic ${b64}`;
+const header = `Authorization: ${auth}`;
 
 const mcpRemoteProxy = path.join(
   projectRoot,
@@ -43,7 +54,7 @@ const mcpRemoteProxy = path.join(
 );
 if (!fs.existsSync(mcpRemoteProxy)) {
   console.error(
-    "chainlit-atlassian-mcp: run `npm install` in this repo (devDependency `mcp-remote`).",
+    "chainlit-github-mcp: run `npm install` in this repo (devDependency `mcp-remote`).",
   );
   process.exit(1);
 }
