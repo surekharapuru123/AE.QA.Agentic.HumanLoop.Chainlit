@@ -1,0 +1,42 @@
+{
+  "name": "ae-qa-agentic",
+  "version": "1.0.0",
+  "description": "Agent-based E2E QA Automation Framework",
+  "scripts": {
+    "chainlit": "chainlit run app.py",
+    "chainlit:watch": "chainlit run app.py -w",
+    "setup:python": "pip install -r requirements.txt",
+    "mcp:atlassian": "node chainlit-atlassian-mcp.cjs",
+    "mcp:setup": "node -e \"console.log('In Chainlit chat, send: /mcp-setup (or use the Setup starter) — one call_tool per MCP, no OpenAI.')\"",
+    "test": "playwright test",
+    "test:headed": "playwright test --headed",
+    "test:chromium": "playwright test --project=chromium",
+    "test:firefox": "playwright test --project=firefox",
+    "test:webkit": "playwright test --project=webkit",
+    "test:debug": "playwright test --debug",
+    "test:ui": "playwright test --ui",
+    "test:trace": "playwright test --trace on",
+    "test:verbose": "playwright test --verbose 2>&1 | tee test-run.log",
+    "test:headless-debug": "PWDEBUG=true playwright test --trace on --screenshot only-on-failure",
+    "test:cart": "playwright test fulfillment-cart-duplicate.spec.ts",
+    "test:cart:debug": "playwright test fulfillment-cart-duplicate.spec.ts --debug",
+    "test:cart:headed": "playwright test fulfillment-cart-duplicate.spec.ts --headed",
+    "test:serial": "playwright test --workers=1",
+    "test:ci": "CI=true playwright test --workers=1",
+    "report": "playwright show-report",
+    "report:open": "playwright show-report test-results/html/index.html",
+    "logs:view": "ls -lart debug-logs/*.log | tail -1 | awk '{print $NF}' | xargs cat",
+    "logs:clean": "rm -rf debug-logs/* test-results/* && echo 'Debug logs cleaned'"
+  },
+  "dependencies": {
+    "@anthropic-ai/sdk": "^0.39.0",
+    "@octokit/rest": "^21.1.1",
+    "dotenv": "^16.4.0",
+    "openai": "^4.104.0"
+  },
+  "devDependencies": {
+    "@playwright/test": "^1.50.0",
+    "tsx": "^4.21.0",
+    "typescript": "^5.7.0"
+  }
+}

@@ -1,0 +1,21 @@
+node_modules/
+dist/
+test-results/
+playwright-report/
+blob-report/
+.env
+.env.local
+
+# Human-loop orchestrator local state (do not commit)
+orchestrator-data/
+*.log
+.DS_Store
+Thumbs.db
+
+# Temporary test run artifacts
+screenshots/result_*.json
+screenshots/*.png
+.playwright-mcp/
+
+# Debug artifacts
+debug-logs/

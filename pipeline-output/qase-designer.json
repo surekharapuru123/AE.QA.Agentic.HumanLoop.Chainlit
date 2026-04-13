@@ -1,0 +1,8 @@
+{
+  "agent": "qase-designer",
+  "status": "STOP",
+  "reason": "Authentication issue with Qase API. Please ensure the API token is correctly configured and has the necessary permissions.",
+  "project_code": "GLOBALP1",
+  "automatable_case_ids": [],
+  "manual_case_ids": []
+}

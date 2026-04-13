@@ -1,0 +1,20 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 300 88" role="img" aria-label="A+E Global Media">
+  <title>A+E Global Media</title>
+  <!-- Prod-style wordmark: black on white, bold A+E with plus, GLOBAL MEDIA below -->
+  <rect width="300" height="88" fill="#ffffff"/>
+  <g fill="#000000" font-family="'Helvetica Neue', Helvetica, Arial, sans-serif">
+    <g transform="translate(150, 50)">
+      <text x="-20" y="0" text-anchor="end" font-size="44" font-weight="900">A</text>
+      <text x="0" y="-2" text-anchor="middle" font-size="30" font-weight="700">+</text>
+      <text x="20" y="0" text-anchor="start" font-size="44" font-weight="900">E</text>
+    </g>
+    <text
+      x="150"
+      y="76"
+      text-anchor="middle"
+      font-size="11"
+      font-weight="600"
+      letter-spacing="0.28em"
+    >GLOBAL MEDIA</text>
+  </g>
+</svg>

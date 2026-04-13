@@ -1,0 +1,7 @@
+# Chainlit UI + MCP (app.py)
+chainlit>=2.7.0
+mcp>=1.0.0
+python-dotenv>=1.0.0
+openai>=1.40.0
+httpx>=0.27.0
+truststore>=0.9.0
