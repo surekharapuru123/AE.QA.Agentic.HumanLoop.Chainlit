@@ -15,6 +15,7 @@ import json
 import os
 import re
 import ssl
+import subprocess
 from datetime import timedelta
 from pathlib import Path
 from typing import Any
@@ -28,6 +29,72 @@ os.environ.setdefault("CHAINLIT_APP_ROOT", str(_PROJECT_ROOT))
 from dotenv import load_dotenv
 
 load_dotenv(_PROJECT_ROOT / ".env")
+
+
+def _parse_github_remote_url(url: str) -> tuple[str, str] | None:
+    """Return (owner, repo_slug) from a common GitHub remote URL, or None."""
+    u = (url or "").strip()
+    if not u:
+        return None
+    m = re.match(r"https?://github\.com/([^/]+)/([^/.?#]+)", u)
+    if m:
+        return m.group(1), m.group(2).removesuffix(".git")
+    m = re.match(r"git@github\.com:([^/]+)/([^/.]+)", u)
+    if m:
+        return m.group(1), m.group(2).removesuffix(".git")
+    return None
+
+
+def _github_owner_repo_from_git_origin() -> tuple[str, str] | None:
+    """Resolve owner/repo from ``git remote get-url origin`` in this app repo."""
+    try:
+        r = subprocess.run(
+            ["git", "remote", "get-url", "origin"],
+            cwd=_PROJECT_ROOT,
+            capture_output=True,
+            text=True,
+            timeout=5,
+            check=False,
+        )
+    except (FileNotFoundError, subprocess.TimeoutExpired, OSError):
+        return None
+    if r.returncode != 0 or not (r.stdout or "").strip():
+        return None
+    return _parse_github_remote_url(r.stdout.strip())
+
+
+def _resolved_github_owner_repo() -> tuple[str | None, str | None]:
+    """GitHub owner and repo slug for MCP and ``pr_url``. Env overrides git remote."""
+    gh_full = (os.getenv("GITHUB_REPOSITORY") or os.getenv("ORCHESTRATOR_GITHUB_REPO") or "").strip()
+    if gh_full and "/" in gh_full:
+        o, _, r = gh_full.partition("/")
+        o, r = o.strip(), r.strip()
+        if o and r:
+            return o, r
+    gh_owner = (os.getenv("GITHUB_REPO_OWNER") or os.getenv("GITHUB_DEFAULT_OWNER") or "").strip()
+    gh_repo = (os.getenv("GITHUB_REPO_NAME") or os.getenv("GITHUB_DEFAULT_REPO") or "").strip()
+    if gh_owner and gh_repo:
+        return gh_owner, gh_repo
+    got = _github_owner_repo_from_git_origin()
+    if got:
+        return got[0], got[1]
+    return None, None
+
+
+def _apply_github_repository_default_from_git() -> None:
+    """If ``GITHUB_REPOSITORY`` is unset, set it from ``origin`` so MCP/tools match this checkout."""
+    if (os.getenv("GITHUB_REPOSITORY") or os.getenv("ORCHESTRATOR_GITHUB_REPO") or "").strip():
+        return
+    if (os.getenv("GITHUB_REPO_OWNER") or os.getenv("GITHUB_DEFAULT_OWNER") or "").strip() and (
+        os.getenv("GITHUB_REPO_NAME") or os.getenv("GITHUB_DEFAULT_REPO") or ""
+    ).strip():
+        return
+    got = _github_owner_repo_from_git_origin()
+    if got:
+        os.environ.setdefault("GITHUB_REPOSITORY", f"{got[0]}/{got[1]}")
+
+
+_apply_github_repository_default_from_git()
 
 
 def _patch_mcp_stdio_for_chainlit() -> None:
@@ -1196,25 +1263,17 @@ def _workflow_env_hints() -> str:
             "**`list_cases`**, etc. Do **not** send schema placeholders like `your_project_code`. "
             "If this code fails validation, call Qase **`list_projects`** once and use the exact `code` from the response.]"
         )
-    gh_full = (os.getenv("GITHUB_REPOSITORY") or os.getenv("ORCHESTRATOR_GITHUB_REPO") or "").strip()
-    gh_owner = (os.getenv("GITHUB_REPO_OWNER") or os.getenv("GITHUB_DEFAULT_OWNER") or "").strip()
-    gh_repo = (os.getenv("GITHUB_REPO_NAME") or os.getenv("GITHUB_DEFAULT_REPO") or "").strip()
-    if gh_full and "/" in gh_full:
-        o, _, r = gh_full.partition("/")
-        o, r = o.strip(), r.strip()
-        if o and r:
-            parts.append(
-                f"[GitHub default **owner** / **repo** from `.env` (`GITHUB_REPOSITORY` or `ORCHESTRATOR_GITHUB_REPO`): "
-                f"**{o}** / **{r}** — use for **`get_file_contents`**, branches, PRs, etc. "
-                "**`repo`** must match the **exact** slug from the GitHub URL (dots and spelling matter; "
-                "`AE.QA.Agentic` and `AE.QA.Agentic.HumanLoop.Chainlit` are different repos). "
-                "Do **not** use placeholders like `username` or `repository`. "
-                "To verify the PAT, call GitHub MCP **`get_me`**; to discover repos, use **`search_repositories`** with a real query.]"
-            )
-    elif gh_owner and gh_repo:
+    gh_o, gh_r = _resolved_github_owner_repo()
+    if gh_o and gh_r:
         parts.append(
-            f"[GitHub default **owner** / **repo** from `.env`: **{gh_owner}** / **{gh_repo}** — "
-            "same rules as above (**exact** repo slug as on github.com; use **`get_me`** / **`search_repositories`** when unsure).]"
+            f"[GitHub **owner** / **repo** for this Chainlit app (resolved for **`create_pull_request`**, PRs, files): "
+            f"**{gh_o}** / **{gh_r}**. "
+            "Resolution order: `GITHUB_REPOSITORY` or `ORCHESTRATOR_GITHUB_REPO`, else "
+            "`GITHUB_DEFAULT_OWNER`+`GITHUB_DEFAULT_REPO` / `GITHUB_REPO_OWNER`+`GITHUB_REPO_NAME`, "
+            "else **`git remote get-url origin`** for this checkout. "
+            f"**Automation JSON `pr_url`:** `https://github.com/{gh_o}/{gh_r}/pull/<pr_number>` only — "
+            "do **not** paste example repos from docs unless they match **this** `origin`. "
+            "**`repo`** must match the exact GitHub slug. Verify PAT with **`get_me`**; discover with **`search_repositories`**.]"
         )
     if not parts:
         return ""
@@ -2674,6 +2733,14 @@ async def _run_openai_with_mcp(user_text: str, ws: WebsocketSession) -> str:
         if _user_mentions_qase(thread_h) or _thread_mentions_qase_stage_work(thread_h):
             system_body += ("\n\n" if _looks_like_jira_issue_key(jira_detect_blob) else "") + qase_request_hint
         if _pipeline_keywords(jira_detect_blob):
+            _wf_go, _wf_gr = _resolved_github_owner_repo()
+            _pr_url_contract = ""
+            if _wf_go and _wf_gr:
+                _pr_url_contract = (
+                    f"**Stage 3 Automation — `pr_url`:** Must be **`https://github.com/{_wf_go}/{_wf_gr}/pull/<pr_number>`** "
+                    f"using GitHub MCP **`owner`**=`{_wf_go}` and **`repo`**=`{_wf_gr}` (this Chainlit checkout / `.env`). "
+                    "Do **not** emit example URLs for a different repository.\n"
+                )
             system_body += (
                 "\n\n**Full workflow:** Advance through orchestrator stages in order. "
                 "Use only MCP operations that the current stage needs; do **not** call broad discovery APIs "
@@ -2700,12 +2767,13 @@ async def _run_openai_with_mcp(user_text: str, ws: WebsocketSession) -> str:
                 "(see README / `.env.example`). When the user asks for **headed** mode, ensure the Playwright MCP server is started "
                 "without headless / with `PLAYWRIGHT_MCP_HEADLESS=false`, then call **`browser_navigate`** to the resolved URL.\n"
                 f"**Repo paths:** `tests/…` and `tests/pages/…` are relative to the project root **`{_PROJECT_ROOT}`** (absolute base on disk).\n"
-                "**Git / GitHub:** If the user asks to push generated tests, use **workspace file tools** to write files under that root, "
+                + _pr_url_contract
+                + "**Git / GitHub:** If the user asks to push generated tests, use **workspace file tools** to write files under that root, "
                 "then **`git`** in a terminal **or** **GitHub MCP** (`GITHUB_TOKEN` / `GH_PAT` in `.env`) — do **not** claim you have no "
                 "way to push when repo tools or GitHub MCP are available. "
-                "For GitHub MCP **`get_file_contents`** and similar calls, use the real **owner** and **repo** from the user, from "
-                "`.env` hints (`GITHUB_REPOSITORY` / `ORCHESTRATOR_GITHUB_REPO` / `GITHUB_DEFAULT_OWNER`+`GITHUB_DEFAULT_REPO`), or from "
-                "**`get_me`** / **`search_repositories`** — **never** fictional values like **`username`** / **`repository`** (those produce 404).\n"
+                "For GitHub MCP **`get_file_contents`** and similar calls, use the **owner** and **repo** from "
+                "**`GITHUB_REPOSITORY`** (or **`git remote origin`** on this app) / `.env` splits / **`get_me`** / **`search_repositories`** — "
+                "**never** fictional values like **`username`** / **`repository`** (those produce 404).\n"
                 "**Identifiers:** **`TC-377`**-style ids are **Qase** public case labels, **not** Jira — use **Qase `get_case`**, "
                 "not **`getJiraIssue`**.\n"
             )

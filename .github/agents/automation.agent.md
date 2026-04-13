@@ -120,8 +120,8 @@ Use `update_case` to set automation status to `automated` for each case.
 ## Step 6 - Push to GitHub (feature branch + PR)
 
 1. Create a **feature branch** (see `.github/skills/automation/SKILL.md` Step 6 for naming).
-2. Commit the new/updated files under `tests/`, **push** to the remote, and open a **pull request** against the repo default branch (use GitHub MCP with real `owner`/`repo` from `GITHUB_REPOSITORY` or the GitHub URL).
-3. Record `branch`, `pr_url`, and `pr_number` in your JSON output so **Executor** checks out that branch for runs and **Healer** can push fixes to the same branch (PR updates automatically).
+2. Commit the new/updated files under `tests/`, **push** to the remote, and open a **pull request** against the repo default branch (use GitHub MCP with **`owner`** / **`repo`** from **`GITHUB_REPOSITORY`** — Chainlit defaults this from **`git remote origin`** of the running app — or from explicit `.env` overrides).
+3. Record `branch`, `pr_url`, and `pr_number` in your JSON output so **Executor** checks out that branch for runs and **Healer** can push fixes to the same branch (PR updates automatically). **`pr_url`** must be `https://github.com/<same-owner>/<same-repo>/pull/<pr_number>` for that checkout, not a static example repo.
 
 ## Output Format
 
@@ -143,7 +143,7 @@ Use `update_case` to set automation status to `automated` for each case.
   "suite_id": 123,
   "automatable_case_ids": [1, 3, 5],
   "branch": "qa/e2e-PROJ-123-fulfillment-cart",
-  "pr_url": "https://github.com/org/repo/pull/42",
+  "pr_url": "https://github.com/<owner>/<repo>/pull/42",
   "pr_number": 42
 }
 ```
