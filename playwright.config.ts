@@ -15,7 +15,7 @@ export default defineConfig({
     ['junit', { outputFile: 'test-results/junit.xml' }],
   ],
   use: {
-    baseURL: process.env.BASE_URL || 'https://qa2.gps.aegm.com',
+    baseURL: process.env.BASE_URL || 'https://qa3.gps.aegm.com',
     // retain-on-failure: trace zip for post-mortem (executor attaches paths via run_playwright_tests)
     trace: process.env.CI ? 'retain-on-failure' : 'on-first-retry',
     // CI: screenshot after every test (pass + fail) so executor can upload evidence to Qase; local: failures only
